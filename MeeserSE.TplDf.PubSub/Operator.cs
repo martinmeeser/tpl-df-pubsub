@@ -1,39 +1,32 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace MeeserSE.TplDf.PubSub
 {
 
-    public interface I_Node
+    public interface INode
     {
         string Name { get; }
     }
 
-    public interface I_Publisher : I_Node
+    public interface IPublisher : INode
     {
-        void Publish(Object value);
+        Task<bool> Publish(Object value, string key);
 
-        void Publish(string value);
+        Task<bool> Publish(string value, string key);
 
-        void Publish(Double value);
+        Task<bool> Publish(double? value, string key);
 
-        void Publish(Double[,,] value);
+        Task<bool> Publish(Double[,,] value, string key);
 
         ISourceBlock<Message> SourceBlock { get; }
     }
 
-    public interface I_Subscriber : I_Node
+    public interface ISubscriber : INode
     {
         Predicate<Message> Subscribtion { get; }
-
-        void Process(Object value);
-
-        void Process(string value);
-
-        void Process(Double value);
-
-        void Process(Double[,,] value);
 
         ITargetBlock<Message> TargetBlock { get; }
     }
@@ -41,30 +34,33 @@ namespace MeeserSE.TplDf.PubSub
     public class Operator
     {
 
-        public void AddNode(I_Node toAdd)
+        public void AddNode(INode toAdd)
         {
             if (toAdd == null)
             {
                 throw new ArgumentNullException(nameof(toAdd));
             }
 
-            if (toAdd is I_Publisher)
+            if (toAdd is IPublisher)
             {
-                AddPublisher(toAdd as I_Publisher);
+                AddPublisher(toAdd as IPublisher);
             }
 
-            if (toAdd is I_Subscriber)
+            if (toAdd is ISubscriber)
             {
-                AddSubscriber(toAdd as I_Subscriber);
+                AddSubscriber(toAdd as ISubscriber);
             }
         }
 
         public Operator()
         {
-            _in_bufferBlock.LinkTo(_in_bufferBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            _processBlock = new TransformBlock<Message, Message>(m => ProcessMessage(m));
+
+            _in_bufferBlock.LinkTo(_processBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            _processBlock.LinkTo(_out_broadcastBlock, new DataflowLinkOptions { PropagateCompletion = true });
         }
 
-        private void AddPublisher(I_Publisher toAdd)
+        private void AddPublisher(IPublisher toAdd)
         {
             if (_publishers.ContainsKey(toAdd.Name))
             {
@@ -77,7 +73,7 @@ namespace MeeserSE.TplDf.PubSub
             }
         }
 
-        private void AddSubscriber(I_Subscriber toAdd)
+        private void AddSubscriber(ISubscriber toAdd)
         {
             if (_subscribers.ContainsKey(toAdd.Name))
             {
@@ -86,7 +82,7 @@ namespace MeeserSE.TplDf.PubSub
             else
             {
                 if (toAdd.Subscribtion == null)
-                { 
+                {
                     _out_broadcastBlock.LinkTo(toAdd.TargetBlock);
                 }
                 else
@@ -97,10 +93,19 @@ namespace MeeserSE.TplDf.PubSub
             }
         }
 
+        private Message ProcessMessage(Message toProcess)
+        {
+            toProcess.Attributes.Add("Publish-Time", DateTime.Now);
+            return toProcess;
+        }
+
         private BufferBlock<Message> _in_bufferBlock = new BufferBlock<Message>();
+
+        private TransformBlock<Message, Message> _processBlock;
+
         private BroadcastBlock<Message> _out_broadcastBlock = new BroadcastBlock<Message>(Message.FastCopy);
-        private Dictionary<string, I_Publisher> _publishers = new Dictionary<string, I_Publisher>();
-        private Dictionary<string, I_Subscriber> _subscribers = new Dictionary<string, I_Subscriber>();
+        private Dictionary<string, IPublisher> _publishers = new Dictionary<string, IPublisher>();
+        private Dictionary<string, ISubscriber> _subscribers = new Dictionary<string, ISubscriber>();
 
     }
 

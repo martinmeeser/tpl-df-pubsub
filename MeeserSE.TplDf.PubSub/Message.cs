@@ -10,7 +10,7 @@ namespace MeeserSE.TplDf.PubSub
             Message result = new Message();
             result.Publisher = toCopy.Publisher;
             result.Key = toCopy.Key;
-            result.Attributes = new Dictionary<string, object>(toCopy.Attributes);
+            result._attributes = new Dictionary<string, object>(toCopy.Attributes);
             result.ObjectValue = toCopy.ObjectValue;
             result.StringValue = toCopy.StringValue;
             result.DoubleValue = toCopy.DoubleValue;
@@ -19,20 +19,34 @@ namespace MeeserSE.TplDf.PubSub
             return result;
         }
 
-        public I_Publisher Publisher { get; private set; }
+        public IPublisher Publisher { get; private set; }
         public string Key { get; private set; }
-        public Dictionary<string, object> Attributes { get; private set; }
+
         public Object ObjectValue { get; private set; }
         public string StringValue { get; private set; }
-        public Double DoubleValue { get; private set; }
-        public Double[,,] DoubleMatrix { get; private set; }
+        public double? DoubleValue { get; private set; }
+        public double[,,] DoubleMatrix { get; private set; }
 
 
-        public Message(I_Publisher publisher, string key, Dictionary<string, object> attributes, object objectValue, string stringValue, Double doubleValue, Double[,,] doubleMatrix)
+        public void AddAttribute(string key, object value)
+        {
+            if (_attributes == null)
+            {
+                _attributes.Add(key, value);
+            }
+        }
+
+        public object GetAttribute(string key)
+        {
+            return _attributes[key];
+        }
+
+        public Dictionary<string, object> Attributes => _attributes == null ? null : new Dictionary<string, object>(_attributes);
+
+        public Message(IPublisher publisher, string key, object objectValue, string stringValue, double? doubleValue, Double[,,] doubleMatrix)
         {
             Publisher = publisher;
             Key = key;
-            Attributes = attributes;
             ObjectValue = objectValue;
             StringValue = stringValue;
             DoubleValue = doubleValue;
@@ -40,6 +54,8 @@ namespace MeeserSE.TplDf.PubSub
         }
 
         private Message() { }
+
+        private Dictionary<string, object> _attributes;
     }
 
 
