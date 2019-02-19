@@ -25,6 +25,10 @@ namespace MeeserSE.TplDf.PubSub
 
     public class PubSubOperator
     {
+        public void PublishMessage(string publisherName, string key, object objValue, string strValue, double? dblValue, double[,,] mtxValue)
+        {
+            _in_bufferBlock.Post(new Message(publisherName, key, objValue, strValue, dblValue, mtxValue));
+        }
         public void PublishMessage(string publisherName, string key, object objValue, string strValue, double? dblValue, double[,,] mtxValue, Dictionary<string, object> headers)
         {
             _in_bufferBlock.Post(new Message(publisherName, key, objValue, strValue, dblValue, mtxValue, headers));

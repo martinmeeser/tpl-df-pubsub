@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MeeserSE.TplDf.PubSub;
 using MeeserSE.TplDf.PubSub.Demo;
@@ -15,7 +16,7 @@ namespace MeeserSE.TplDf.Demo
             // ******************************************************
 
             int nx = 2;
-            int ny = 4;
+            int ny = 1;
 
             // ******************************************************
             // operator
@@ -33,6 +34,9 @@ namespace MeeserSE.TplDf.Demo
             Collector c1 = new Collector("m1_collector", m => m.PublisherName.Equals(m1.Name), nx, ny);
             pubSubOperator.AddNode(c1);
 
+
+            Difference diff1 = new Difference("m1-m2", new List<IPublisher> { m1, m2 }, nx, ny);
+            pubSubOperator.AddNode(diff1);
 
             // pubSubOperator.AddSubscriber(
             //     name: "eval_median_m1",

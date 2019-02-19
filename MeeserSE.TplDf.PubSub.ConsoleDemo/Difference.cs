@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks.Dataflow;
 
-namespace MeeserSE.TplDf.PubSub.Demo
+namespace MeeserSE.TplDf.PubSub.ConsoleDemo
 {
 
     public class Difference : ISubscriber, IPublisher

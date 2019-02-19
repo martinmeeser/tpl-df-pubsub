@@ -40,5 +40,10 @@ namespace MeeserSE.TplDf.PubSub
             return null;
         }
 
+        public static void PublishMessage(this PubSubOperator pubSubOperator, string publisherName, string key, string strValue)
+        {
+            pubSubOperator.PublishMessage(publisherName, key, null, strValue, null, null);
+        }
+
     }
 }
