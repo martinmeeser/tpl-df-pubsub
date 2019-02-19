@@ -13,14 +13,6 @@ namespace MeeserSE.TplDf.PubSub
 
     public interface IPublisher : INode
     {
-        Task<bool> Publish(Object value, string key);
-
-        Task<bool> Publish(string value, string key);
-
-        Task<bool> Publish(double? value, string key);
-
-        Task<bool> Publish(Double[,,] value, string key);
-
         ISourceBlock<Message> SourceBlock { get; }
     }
 
@@ -31,8 +23,12 @@ namespace MeeserSE.TplDf.PubSub
         ITargetBlock<Message> TargetBlock { get; }
     }
 
-    public class Operator
+    public class PubSubOperator
     {
+        public void PublishMessage(string publisherName, string key, object objValue, string strValue, double? dblValue, double[,,] mtxValue, Dictionary<string, object> headers)
+        {
+            _in_bufferBlock.Post(new Message(publisherName, key, objValue, strValue, dblValue, mtxValue, headers));
+        }
 
         public void AddNode(INode toAdd)
         {
@@ -52,7 +48,7 @@ namespace MeeserSE.TplDf.PubSub
             }
         }
 
-        public Operator()
+        public PubSubOperator()
         {
             _processBlock = new TransformBlock<Message, Message>(m => ProcessMessage(m));
 
@@ -95,7 +91,7 @@ namespace MeeserSE.TplDf.PubSub
 
         private Message ProcessMessage(Message toProcess)
         {
-            toProcess.Attributes.Add("Publish-Time", DateTime.Now);
+            toProcess.AddHeader("Publish-Time", DateTime.Now);
             return toProcess;
         }
 

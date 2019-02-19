@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/MeeserSE.TplDf.Demo.csproj"
+                "${workspaceFolder}/MeeserSE.TplDf.PubSub.Demo.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

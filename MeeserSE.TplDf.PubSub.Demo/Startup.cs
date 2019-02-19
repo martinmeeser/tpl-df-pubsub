@@ -57,6 +57,11 @@ namespace MeeserSE.TplDf.Demo
             // {
             //     await context.Response.WriteAsync("Hello World!");
             // });
+
+
+            Demo demo = new Demo();
+
+            Task.Run(async () => { await Task.Delay(2000); await demo.Execute(); });
         }
 
         private async Task Echo(HttpContext context, WebSocket webSocket)

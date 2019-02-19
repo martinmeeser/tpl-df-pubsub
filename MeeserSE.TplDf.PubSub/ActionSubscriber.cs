@@ -13,28 +13,20 @@ namespace MeeserSE.TplDf.PubSub
 
         public string Name { get; }
 
-        public ActionSubscriber(Action<object> action)
-        { }
+        public ActionSubscriber(string name, Predicate<Message> subscribtion, Action<Message> messageAction)
+        {
+            Name = name;
+            _messageAction = messageAction;
+            Subscribtion = subscribtion;
+            _actionBlock = new ActionBlock<Message>((m) => ProcessMessage(m));
+        }
 
-        public ActionSubscriber(Action<string> action)
-        { }
-
-        public ActionSubscriber(Action<double?> action)
-        { }
-
-        public ActionSubscriber(Action<double[,,]> action)
-        { }
-
+    
 
         private ActionBlock<Message> _actionBlock;
 
-        private Action<object> _objectAction;
+        private Action<Message> _messageAction;
 
-        private Action<string> _stringAction;
-
-        private Action<double?> _doubleAction;
-
-        private Action<double[,,]> _matrixAction;
 
         private void ProcessMessage(Message m)
         {
@@ -43,24 +35,9 @@ namespace MeeserSE.TplDf.PubSub
                 throw new ArgumentNullException(nameof(m));
             }
 
-            if (m.ObjectValue != null && _objectAction != null)
+            if (_messageAction != null)
             {
-                _objectAction(m.ObjectValue);
-            }
-
-            if (m.StringValue != null && _stringAction != null)
-            {
-                _stringAction(m.StringValue);
-            }
-
-            if (m.DoubleValue != null && _doubleAction != null)
-            {
-                _doubleAction(m.DoubleValue);
-            }
-
-            if (m.DoubleMatrix != null && _matrixAction != null)
-            {
-                _matrixAction(m.DoubleMatrix);
+                _messageAction(m);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MeeserSE.TplDf.PubSub
 {
@@ -8,54 +9,100 @@ namespace MeeserSE.TplDf.PubSub
         public static Message FastCopy(Message toCopy)
         {
             Message result = new Message();
-            result.Publisher = toCopy.Publisher;
+            result.PublisherName = toCopy.PublisherName;
             result.Key = toCopy.Key;
-            result._attributes = new Dictionary<string, object>(toCopy.Attributes);
+            result._headers = new Dictionary<string, object>(toCopy.Headers);
             result.ObjectValue = toCopy.ObjectValue;
             result.StringValue = toCopy.StringValue;
             result.DoubleValue = toCopy.DoubleValue;
-            result.DoubleMatrix = toCopy.DoubleMatrix;
+            result.MatrixValue = toCopy.MatrixValue;
 
             return result;
         }
 
-        public IPublisher Publisher { get; private set; }
+        public string PublisherName { get; private set; }
         public string Key { get; private set; }
 
         public Object ObjectValue { get; private set; }
         public string StringValue { get; private set; }
         public double? DoubleValue { get; private set; }
-        public double[,,] DoubleMatrix { get; private set; }
+        public double[,,] MatrixValue { get; private set; }
 
 
-        public void AddAttribute(string key, object value)
+        public void AddHeader(string key, object value)
         {
-            if (_attributes == null)
+            _headers.Add(key, value);
+        }
+
+        public object GetHeader(string key)
+        {
+            return _headers[key];
+        }
+
+        public Dictionary<string, object> Headers => _headers == null ? null : new Dictionary<string, object>(_headers);
+
+        public override string ToString()
+        {
+
+            StringBuilder resultBuilder = new StringBuilder(PublisherName);
+            resultBuilder.Append(" -- ");
+
+            if (ObjectValue != null)
             {
-                _attributes.Add(key, value);
+                resultBuilder.Append("obj=").Append(ObjectValue.ToString());
             }
+            if (StringValue != null)
+            {
+                resultBuilder.Append("str=").Append(StringValue.ToString());
+            }
+            if (DoubleValue != null)
+            {
+                resultBuilder.Append("dbl=").Append(DoubleValue.ToString());
+            }
+            if (MatrixValue != null)
+            {
+                resultBuilder.Append("mtx").Append(MatrixValue.ToString());
+            }
+
+            if (_headers != null)
+            {
+                resultBuilder.Append("\t{");
+                foreach (KeyValuePair<string, object> header in _headers)
+                {
+                    // TODO null-checks
+                    // TODO recursivly dive into headers ??? possibly change to string,string
+                    resultBuilder.Append(" {").Append(header.Key).Append(" ").Append(header.Value.ToString()).Append("}");
+                }
+                resultBuilder.Append(" }");
+            }
+
+            return resultBuilder.ToString();
         }
 
-        public object GetAttribute(string key)
+        public Message(string publisherName, string key, object objectValue, string stringValue, double? doubleValue, Double[,,] doubleMatrix)
         {
-            return _attributes[key];
-        }
-
-        public Dictionary<string, object> Attributes => _attributes == null ? null : new Dictionary<string, object>(_attributes);
-
-        public Message(IPublisher publisher, string key, object objectValue, string stringValue, double? doubleValue, Double[,,] doubleMatrix)
-        {
-            Publisher = publisher;
+            PublisherName = publisherName;
             Key = key;
             ObjectValue = objectValue;
             StringValue = stringValue;
             DoubleValue = doubleValue;
-            DoubleMatrix = doubleMatrix;
+            MatrixValue = doubleMatrix;
+        }
+
+        public Message(string publisherName, string key, object objectValue, string stringValue, double? doubleValue, Double[,,] doubleMatrix, Dictionary<string, object> headers)
+        {
+            PublisherName = publisherName;
+            Key = key;
+            ObjectValue = objectValue;
+            StringValue = stringValue;
+            DoubleValue = doubleValue;
+            MatrixValue = doubleMatrix;
+            _headers = headers;
         }
 
         private Message() { }
 
-        private Dictionary<string, object> _attributes;
+        private Dictionary<string, object> _headers = new Dictionary<string, object>();
     }
 
 

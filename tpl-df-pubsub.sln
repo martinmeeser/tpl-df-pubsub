@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeeserSE.TplDf.PubSub", "Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeeserSE.TplDf.PubSub.Websocket", "MeeserSE.TplDf.PubSub.Websocket\MeeserSE.TplDf.PubSub.Websocket.csproj", "{D69C34D9-330F-4428-8DD7-36F87104204E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeeserSE.TplDf.Demo", "MeeserSE.TplDf.PubSub.Demo\MeeserSE.TplDf.Demo.csproj", "{C2FA854F-28DC-4A27-B185-0101D65A03A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeeserSE.TplDf.PubSub.Demo", "MeeserSE.TplDf.PubSub.Demo\MeeserSE.TplDf.PubSub.Demo.csproj", "{C2FA854F-28DC-4A27-B185-0101D65A03A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
